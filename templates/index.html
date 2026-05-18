@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Parser</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>🧠 AI Resume Parser</h1>
+        <p class="subtitle">Upload your resume and let AI extract the info!</p>
+
+        <div class="upload-box">
+            <input type="file" id="resumeInput" accept=".pdf" />
+            <button onclick="uploadResume()">🚀 Parse Resume</button>
+        </div>
+
+        <div id="loading" style="display:none;">
+            <p>⏳ Parsing your resume...</p>
+        </div>
+
+        <div id="result" style="display:none;">
+            <h2>📋 Extracted Information</h2>
+            <div class="card">
+                <p><strong>👤 Name:</strong> <span id="name"></span></p>
+                <p><strong>📧 Email:</strong> <span id="email"></span></p>
+                <p><strong>📞 Phone:</strong> <span id="phone"></span></p>
+                <p><strong>💻 Skills:</strong> <span id="skills"></span></p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        async function uploadResume() {
+            const fileInput = document.getElementById('resumeInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Please select a PDF file!');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('resume', file);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+
+            document.getElementById('name').textContent = data.name;
+            document.getElementById('email').textContent = data.email;
+            document.getElementById('phone').textContent = data.phone;
+            document.getElementById('skills').textContent = data.skills.join(', ');
+        }
+    </script>
+
+</body>
+</html>
